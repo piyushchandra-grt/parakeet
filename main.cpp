@@ -73,9 +73,10 @@ public:
     }
 };
 
-const ErrorCategory& error_category() {
-    static ErrorCategory instance;
-    return instance;
+
+inline ErrorCategory error_category_instance;
+inline const ErrorCategory& error_category() {
+    return error_category_instance;
 }
 
 std::error_code make_error_code(ClientError e) {
@@ -110,7 +111,13 @@ private:
     static constexpr size_t BUFFER_SIZE = 8192;
 
 public:
-    SecureTlsClient() : ssl_ctx_(nullptr, &SSL_CTX_free), ssl_(nullptr, &SSL_free) {
+    SecureTlsClient()
+        : ssl_ctx_(nullptr, &SSL_CTX_free)
+        , ssl_(nullptr, &SSL_free)
+        , socket_fd_(-1)
+        , hostname_()
+        , port_(0)
+    {
         OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS | OPENSSL_INIT_LOAD_CRYPTO_STRINGS, nullptr);
     }
     
