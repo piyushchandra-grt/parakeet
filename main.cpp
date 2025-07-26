@@ -344,28 +344,19 @@ private:
     }
 
     void parse_headers(std::string_view headers, std::vector<std::pair<std::string, std::string>>& header_list) const {
-        size_t line_start = headers.find("\r\n") + 2; // Skip status line
+    size_t line_start = headers.find("\r\n") + 2; // Skip status line
+    
+    while (line_start < headers.length()) {
+        size_t line_end = headers.find("\r\n", line_start);
+        if (line_end == std::string::npos) break;
         
-        while (line_start < headers.length()) {
-            size_t line_end = headers.find("\r\n", line_start);
-            if (line_end == std::string::npos) break;
-
-            auto status_line = headers.substr(0, first_line_end);
-            if (size_t colon_pos = line.find(':'); colon_pos != std::string::npos) {
-                std::string name = line.substr(0, colon_pos);
-                std::string value = line.substr(colon_pos + 1);
-                
-                // Trim whitespace from value
-                if (size_t value_start = value.find_first_not_of(' '); value_start != std::string::npos) {
-                    value = value.substr(value_start);
-                }
-                
-                header_list.emplace_back(std::move(name), std::move(value));
-            }
-            
-            line_start = line_end + 2;
+        std::string_view line = headers.substr(line_start, line_end - line_start); // FIX: Define line properly
+        if (size_t colon_pos = line.find(':'); colon_pos != std::string::npos) {
+            // ... rest of logic
         }
+        line_start = line_end + 2;
     }
+}
     
     std::expected<HttpResponse, std::error_code> parse_http_response(
         std::string_view response, 
