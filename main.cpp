@@ -329,7 +329,7 @@ private:
             return std::unexpected(make_error_code(InvalidResponse));
         }
         
-        std::string status_line = std::string(headers.substr(0, first_line_end));
+        auto status_line = headers.substr(0, first_line_end);
         size_t first_space = status_line.find(' ');
         size_t second_space = status_line.find(' ', first_space + 1);
         
@@ -349,8 +349,8 @@ private:
         while (line_start < headers.length()) {
             size_t line_end = headers.find("\r\n", line_start);
             if (line_end == std::string::npos) break;
-            
-            std::string line = std::string(headers.substr(line_start, line_end - line_start));
+
+            auto status_line = headers.substr(0, first_line_end);
             if (size_t colon_pos = line.find(':'); colon_pos != std::string::npos) {
                 std::string name = line.substr(0, colon_pos);
                 std::string value = line.substr(colon_pos + 1);
